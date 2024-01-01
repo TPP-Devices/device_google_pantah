@@ -5,6 +5,7 @@
 #
 
 # Build hax
+BUILD_BROKEN_DUP_RULES := true
 DISABLE_ARTIFACT_PATH_REQUIREMENTS := true
 
 # Kernel modules
