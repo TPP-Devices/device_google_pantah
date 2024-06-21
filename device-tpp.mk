@@ -49,6 +49,9 @@ PRODUCT_PACKAGES += \
     libGLESv1_CM_angle \
     libGLESv2_angle
 
+# Scudo
+PRODUCT_USE_SCUDO := true
+
 # Sensors
 PRODUCT_PACKAGES += \
     sensors.dynamic_sensor_hal
