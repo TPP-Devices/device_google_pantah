@@ -17,6 +17,19 @@
 # Restrict the visibility of Android.bp files to improve build analysis time
 $(call inherit-product-if-exists, vendor/google/products/sources_pixel.mk)
 
+ifdef RELEASE_GOOGLE_PANTHER_RADIO_DIR
+RELEASE_GOOGLE_PRODUCT_RADIO_DIR := $(RELEASE_GOOGLE_PANTHER_RADIO_DIR)
+endif
+RELEASE_GOOGLE_BOOTLOADER_PANTHER_DIR ?= pdk# Keep this for pdk TODO: b/327119000
+RELEASE_GOOGLE_PRODUCT_BOOTLOADER_DIR := bootloader/$(RELEASE_GOOGLE_BOOTLOADER_PANTHER_DIR)
+$(call soong_config_set,pantah_bootloader,prebuilt_dir,$(RELEASE_GOOGLE_BOOTLOADER_PANTHER_DIR))
+ifneq ($(filter trunk%, $(RELEASE_GOOGLE_BOOTLOADER_PANTHER_DIR)),)
+$(call soong_config_set,pantah_fingerprint,prebuilt_dir,trunk)
+else
+$(call soong_config_set,pantah_fingerprint,prebuilt_dir,$(RELEASE_GOOGLE_BOOTLOADER_PANTHER_DIR))
+endif
+
+
 TARGET_LINUX_KERNEL_VERSION := $(RELEASE_KERNEL_PANTHER_VERSION)
 # Keeps flexibility for kasan and ufs builds
 TARGET_KERNEL_DIR ?= $(RELEASE_KERNEL_PANTHER_DIR)
@@ -436,5 +449,13 @@ PRODUCT_PRODUCT_PROPERTIES += \
     ro.quick_start.device_id=panther
 
 # Bluetooth device id
+# Panther: 0x4109
 PRODUCT_PRODUCT_PROPERTIES += \
-    bluetooth.device_id.product_id=20489
+    bluetooth.device_id.product_id=16649
+
+# ETM
+ifneq (,$(RELEASE_ETM_IN_USERDEBUG_ENG))
+ifneq (,$(filter userdebug eng, $(TARGET_BUILD_VARIANT)))
+$(call inherit-product-if-exists, device/google/common/etm/device-userdebug-modules.mk)
+endif
+endif
