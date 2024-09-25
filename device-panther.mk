@@ -46,7 +46,6 @@ DEVICE_PACKAGE_OVERLAYS += device/google/pantah/panther/overlay
 
 include device/google/pantah/audio/panther/audio-tables.mk
 include device/google/gs201/device-shipping-common.mk
-include hardware/google/pixel/vibrator/cs40l26/device.mk
 include device/google/gs-common/bcmbt/bluetooth.mk
 include device/google/gs-common/touch/focaltech/focaltech.mk
 
