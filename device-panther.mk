@@ -109,6 +109,9 @@ PRODUCT_PACKAGES += \
 	android.hardware.nfc-service.st \
 	NfcOverlayPanther
 
+# modem_svc_sit daemon
+PRODUCT_PACKAGES += modem_svc_sit
+
 # SecureElement
 PRODUCT_PACKAGES += \
 	android.hardware.secure_element@1.2-service-gto \
