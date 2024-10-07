@@ -38,7 +38,6 @@ $(call inherit-product-if-exists, vendor/google_devices/pantah/proprietary/cloud
 
 include device/google/gs201/device-shipping-common.mk
 include device/google/pantah/audio/cloudripper/audio-tables.mk
-include hardware/google/pixel/vibrator/cs40l26/device.mk
 include device/google/gs-common/bcmbt/bluetooth.mk
 include device/google/gs-common/gps/brcm/cbd_gps.mk
 include device/google/gs-common/touch/syna/syna0.mk
@@ -79,6 +78,9 @@ PRODUCT_PACKAGES += \
 	$(RELEASE_PACKAGE_NFC_STACK) \
 	Tag \
 	android.hardware.nfc-service.st
+
+# modem_svc_sit daemon
+PRODUCT_PACKAGES += modem_svc_sit
 
 # SecureElement
 PRODUCT_PACKAGES += \
