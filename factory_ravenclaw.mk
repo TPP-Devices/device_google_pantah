@@ -30,5 +30,8 @@ PRODUCT_MANUFACTURER := Google
 PRODUCT_PROPERTY_OVERRIDES += \
 	ro.vendor.bluetooth.evb_bdaddr="22:22:22:33:44:55"
 
-# modem_svc_sit daemon
-PRODUCT_PACKAGES += modem_svc_sit
+# Shared Modem Platform
+SHARED_MODEM_PLATFORM_VENDOR := lassen
+
+# Shared Modem Platform
+include device/google/gs-common/modem/shared_modem_platform/shared_modem_platform.mk
