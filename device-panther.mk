@@ -17,6 +17,19 @@
 # Restrict the visibility of Android.bp files to improve build analysis time
 $(call inherit-product-if-exists, vendor/google/products/sources_pixel.mk)
 
+ifdef RELEASE_GOOGLE_PANTHER_RADIO_DIR
+RELEASE_GOOGLE_PRODUCT_RADIO_DIR := $(RELEASE_GOOGLE_PANTHER_RADIO_DIR)
+endif
+RELEASE_GOOGLE_BOOTLOADER_PANTHER_DIR ?= pdk# Keep this for pdk TODO: b/327119000
+RELEASE_GOOGLE_PRODUCT_BOOTLOADER_DIR := bootloader/$(RELEASE_GOOGLE_BOOTLOADER_PANTHER_DIR)
+$(call soong_config_set,pantah_bootloader,prebuilt_dir,$(RELEASE_GOOGLE_BOOTLOADER_PANTHER_DIR))
+ifneq ($(filter trunk%, $(RELEASE_GOOGLE_BOOTLOADER_PANTHER_DIR)),)
+$(call soong_config_set,pantah_fingerprint,prebuilt_dir,trunk)
+else
+$(call soong_config_set,pantah_fingerprint,prebuilt_dir,$(RELEASE_GOOGLE_BOOTLOADER_PANTHER_DIR))
+endif
+
+
 TARGET_LINUX_KERNEL_VERSION := $(RELEASE_KERNEL_PANTHER_VERSION)
 # Keeps flexibility for kasan and ufs builds
 TARGET_KERNEL_DIR ?= $(RELEASE_KERNEL_PANTHER_DIR)
@@ -192,7 +205,7 @@ PRODUCT_COPY_FILES += \
 
 # LE Audio Unicast Allowlist
 PRODUCT_PRODUCT_PROPERTIES += \
-    persist.bluetooth.leaudio.allow_list=SM-R510
+    persist.bluetooth.leaudio.allow_list=SM-R510,WF-1000XM5
 
 # Support LE & Classic concurrent encryption (b/330704060)
 PRODUCT_PRODUCT_PROPERTIES += \
@@ -285,15 +298,27 @@ PRODUCT_SOONG_NAMESPACES += vendor/google_devices/pantah/prebuilts
 
 # Location
 ifneq (,$(filter userdebug eng, $(TARGET_BUILD_VARIANT)))
+    PRODUCT_COPY_FILES += \
+        device/google/pantah/location/lhd.conf.p10:$(TARGET_COPY_OUT_VENDOR)/etc/gnss/lhd.conf \
+        device/google/pantah/location/scd.conf.p10:$(TARGET_COPY_OUT_VENDOR)/etc/gnss/scd.conf
+    ifneq (,$(filter 6.1, $(TARGET_LINUX_KERNEL_VERSION)))
         PRODUCT_COPY_FILES += \
-                device/google/pantah/location/gps.xml.p10:$(TARGET_COPY_OUT_VENDOR)/etc/gnss/gps.xml \
-                device/google/pantah/location/lhd.conf.p10:$(TARGET_COPY_OUT_VENDOR)/etc/gnss/lhd.conf \
-                device/google/pantah/location/scd.conf.p10:$(TARGET_COPY_OUT_VENDOR)/etc/gnss/scd.conf
+            device/google/pantah/location/gps.6.1.xml.p10:$(TARGET_COPY_OUT_VENDOR)/etc/gnss/gps.xml
+    else
+        PRODUCT_COPY_FILES += \
+            device/google/pantah/location/gps.xml.p10:$(TARGET_COPY_OUT_VENDOR)/etc/gnss/gps.xml
+    endif
 else
+    PRODUCT_COPY_FILES += \
+        device/google/pantah/location/lhd_user.conf.p10:$(TARGET_COPY_OUT_VENDOR)/etc/gnss/lhd.conf \
+        device/google/pantah/location/scd_user.conf.p10:$(TARGET_COPY_OUT_VENDOR)/etc/gnss/scd.conf
+    ifneq (,$(filter 6.1, $(TARGET_LINUX_KERNEL_VERSION)))
         PRODUCT_COPY_FILES += \
-                device/google/pantah/location/gps_user.xml.p10:$(TARGET_COPY_OUT_VENDOR)/etc/gnss/gps.xml \
-                device/google/pantah/location/lhd_user.conf.p10:$(TARGET_COPY_OUT_VENDOR)/etc/gnss/lhd.conf \
-                device/google/pantah/location/scd_user.conf.p10:$(TARGET_COPY_OUT_VENDOR)/etc/gnss/scd.conf
+            device/google/pantah/location/gps_user.6.1.xml.p10:$(TARGET_COPY_OUT_VENDOR)/etc/gnss/gps.xml
+    else
+        PRODUCT_COPY_FILES += \
+            device/google/pantah/location/gps_user.xml.p10:$(TARGET_COPY_OUT_VENDOR)/etc/gnss/gps.xml
+    endif
 endif
 
 # Set support one-handed mode
@@ -309,12 +334,30 @@ ifdef RELEASE_SVN_PANTHER
 TARGET_SVN ?= $(RELEASE_SVN_PANTHER)
 else
 # Set this for older releases that don't use build flag
-TARGET_SVN ?= 60
+TARGET_SVN ?= 61
 endif
 
 PRODUCT_VENDOR_PROPERTIES += \
     ro.vendor.build.svn=$(TARGET_SVN)
 
+# Set device family property for SMR
+PRODUCT_PROPERTY_OVERRIDES += \
+    ro.build.device_family=P10C10L10
+
+# Set build properties for SMR builds
+ifeq ($(RELEASE_IS_SMR), true)
+    ifneq (,$(RELEASE_BASE_OS_PANTHER))
+        PRODUCT_BASE_OS := $(RELEASE_BASE_OS_PANTHER)
+    endif
+endif
+
+# Set build properties for EMR builds
+ifeq ($(RELEASE_IS_EMR), true)
+    ifneq (,$(RELEASE_BASE_OS_PANTHER))
+        PRODUCT_PROPERTY_OVERRIDES += \
+        ro.build.version.emergency_base_os=$(RELEASE_BASE_OS_PANTHER)
+    endif
+endif
 # DCK properties based on target
 PRODUCT_PROPERTY_OVERRIDES += \
     ro.gms.dck.eligible_wcc=2 \
@@ -361,6 +404,10 @@ PRODUCT_VENDOR_PROPERTIES += \
     persist.vendor.vibrator.hal.context.cooldowntime=1600 \
     persist.vendor.vibrator.hal.context.settlingtime=5000
 
+# Override Output Distortion Gain
+PRODUCT_VENDOR_PROPERTIES += \
+    vendor.audio.hapticgenerator.distortion.output.gain=0.38
+
 # Keyboard bottom padding in dp for portrait mode and height ratio
 PRODUCT_PRODUCT_PROPERTIES += \
     ro.com.google.ime.kb_pad_port_b=8 \
@@ -400,3 +447,15 @@ PRODUCT_VENDOR_PROPERTIES += \
 PRODUCT_PRODUCT_PROPERTIES += \
     ro.quick_start.oem_id=00e0 \
     ro.quick_start.device_id=panther
+
+# Bluetooth device id
+# Panther: 0x4109
+PRODUCT_PRODUCT_PROPERTIES += \
+    bluetooth.device_id.product_id=16649
+
+# ETM
+ifneq (,$(RELEASE_ETM_IN_USERDEBUG_ENG))
+ifneq (,$(filter userdebug eng, $(TARGET_BUILD_VARIANT)))
+$(call inherit-product-if-exists, device/google/common/etm/device-userdebug-modules.mk)
+endif
+endif
