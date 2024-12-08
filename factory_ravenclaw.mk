@@ -34,4 +34,4 @@ PRODUCT_PROPERTY_OVERRIDES += \
 SHARED_MODEM_PLATFORM_VENDOR := lassen
 
 # Shared Modem Platform
-include device/google/gs-common/modem/shared_modem_platform/shared_modem_platform.mk
+include device/google/gs-common/modem/modem_svc_sit/shared_modem_platform.mk
