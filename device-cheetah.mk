@@ -48,7 +48,6 @@ DEVICE_PACKAGE_OVERLAYS += device/google/pantah/cheetah/overlay
 
 include device/google/pantah/audio/cheetah/audio-tables.mk
 include device/google/gs201/device-shipping-common.mk
-include hardware/google/pixel/vibrator/cs40l26/device.mk
 include device/google/gs-common/bcmbt/bluetooth.mk
 include device/google/gs-common/touch/syna/syna0.mk
 
@@ -73,9 +72,13 @@ PRODUCT_COPY_FILES += \
 PRODUCT_COPY_FILES += \
         device/google/pantah/conf/init.recovery.device.rc:$(TARGET_COPY_OUT_RECOVERY)/root/init.recovery.cheetah.rc
 
-# insmod files
+# insmod files. Kernel 5.10 prebuilts don't provide these yet, so provide our
+# own copy if they're not in the prebuilts.
+# TODO(b/369686096): drop this when 5.10 is gone.
+ifeq ($(wildcard $(TARGET_KERNEL_DIR)/init.insmod.*.cfg),)
 PRODUCT_COPY_FILES += \
-	device/google/pantah/init.insmod.cheetah.cfg:$(TARGET_COPY_OUT_VENDOR)/etc/init.insmod.cheetah.cfg
+	device/google/pantah/init.insmod.cheetah.cfg:$(TARGET_COPY_OUT_VENDOR_DLKM)/etc/init.insmod.cheetah.cfg
+endif
 
 # MIPI Coex Configs
 PRODUCT_COPY_FILES += \
@@ -130,6 +133,12 @@ PRODUCT_PACKAGES += \
 	Tag \
 	android.hardware.nfc-service.st \
 	NfcOverlayCheetah
+
+# Shared Modem Platform
+SHARED_MODEM_PLATFORM_VENDOR := lassen
+
+# Shared Modem Platform
+include device/google/gs-common/modem/modem_svc_sit/shared_modem_platform.mk
 
 # SecureElement
 PRODUCT_PACKAGES += \
@@ -235,7 +244,7 @@ PRODUCT_COPY_FILES += \
 
 # LE Audio Unicast Allowlist
 PRODUCT_PRODUCT_PROPERTIES += \
-    persist.bluetooth.leaudio.allow_list=SM-R510,WF-1000XM5
+    persist.bluetooth.leaudio.allow_list=SM-R510,WF-1000XM5,SM-R630
 
 # Support LE & Classic concurrent encryption (b/330704060)
 PRODUCT_PRODUCT_PROPERTIES += \

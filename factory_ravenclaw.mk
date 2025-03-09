@@ -29,3 +29,9 @@ PRODUCT_MANUFACTURER := Google
 # default BDADDR for EVB only
 PRODUCT_PROPERTY_OVERRIDES += \
 	ro.vendor.bluetooth.evb_bdaddr="22:22:22:33:44:55"
+
+# Shared Modem Platform
+SHARED_MODEM_PLATFORM_VENDOR := lassen
+
+# Shared Modem Platform
+include device/google/gs-common/modem/modem_svc_sit/shared_modem_platform.mk
