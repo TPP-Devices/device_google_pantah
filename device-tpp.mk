@@ -49,6 +49,9 @@ PRODUCT_PACKAGES += \
     libGLESv1_CM_angle \
     libGLESv2_angle
 
+# PixelParts
+include packages/apps/PixelParts/device.mk
+
 # Scudo
 PRODUCT_USE_SCUDO := true
 
