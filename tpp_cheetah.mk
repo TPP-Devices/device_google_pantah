@@ -33,8 +33,8 @@ TARGET_ENABLE_BLUR := true
 CUSTOM_MAINTAINER := ZirgomHaidar
 
 PRODUCT_BUILD_PROP_OVERRIDES += \
-    BuildDesc="cheetah-user 15 BP1A.250305.019 13003188 release-keys" \
-    BuildFingerprint=google/cheetah/cheetah:15/BP1A.250305.019/13003188:user/release-keys \
+    BuildDesc="cheetah-user 15 BP1A.250405.007.B1 13240308 release-keys" \
+    BuildFingerprint=google/cheetah/cheetah:15/BP1A.250405.007.B1/13240308:user/release-keys \
     DeviceProduct=$(DEVICE_CODENAME)
 
 $(call inherit-product, $(VENDOR_PATH)/$(DEVICE_CODENAME)-vendor.mk)
