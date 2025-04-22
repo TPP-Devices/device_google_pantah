@@ -12,7 +12,6 @@ $(call inherit-product, vendor/aosp/config/common_full_phone.mk)
 DEVICE_CODENAME := cheetah
 DEVICE_PATH := device/google/pantah
 VENDOR_PATH := vendor/google/cheetah
-$(call inherit-product, $(DEVICE_PATH)/aosp_$(DEVICE_CODENAME).mk)
 $(call inherit-product, device/google/gs201/tpp_common.mk)
 $(call inherit-product, $(DEVICE_PATH)/$(DEVICE_CODENAME)/device-tpp.mk)
 
@@ -27,6 +26,11 @@ TARGET_SCREEN_WIDTH := 1440
 
 TARGET_BOOT_ANIMATION_RES := 1440
 CUSTOM_BUILD_TYPE := OFFICIAL
+
+TARGET_FACE_UNLOCK_SUPPORTED := true
+TARGET_SUPPORTS_QUICK_TAP := true
+TARGET_ENABLE_BLUR := true
+CUSTOM_MAINTAINER := ZirgomHaidar
 
 PRODUCT_BUILD_PROP_OVERRIDES += \
     BuildDesc="cheetah-user 15 BP1A.250305.019 13003188 release-keys" \

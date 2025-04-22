@@ -21,11 +21,12 @@ BOARD_USES_SWIFTSHADER := true
 
 $(call inherit-product, device/google/gs201/aosp_common.mk)
 $(call inherit-product, device/google/pantah/device-cheetah.mk)
+$(call inherit-product, device/google/pantah/tpp_cheetah.mk)
 
-PRODUCT_NAME := aosp_cheetah
+PRODUCT_NAME := tpp_cheetah
 PRODUCT_DEVICE := cheetah
-PRODUCT_MODEL := AOSP on Cheetah
-PRODUCT_BRAND := Android
+PRODUCT_MODEL := Pixel 7 Pro
+PRODUCT_BRAND := google
 PRODUCT_MANUFACTURER := Google
 
 DEVICE_MANIFEST_FILE := \
